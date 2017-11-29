@@ -38,9 +38,9 @@ This plugin requires neovim and Python 3.6+. (Support for vim and Python 2 will 
 support for 3 =< python < 3.6 can be easily added, the requirement of 3.6
 comes from the use of f-string).
 
-Just use your nvim's plugin manager to install it. For example:
+Just use your nvim's plugin manager to install it. For example, if you are using vim-plug:
 
-    Plug 'qwfy/vim-senter'
+    Plug 'qwfy/vim-senter', { 'do': ':UpdateRemotePlugins' }
 
 If you want to send to Jupyter Notebook, you also need to install
 [jupyter-nbportal](https://github.com/qwfy/jupyter-nbportal/blob/master/readme.md)
