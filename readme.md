@@ -43,11 +43,11 @@ Just use your nvim's plugin manager to install it. For example:
     Plug 'qwfy/vim-senter'
 
 If you want to send to Jupyter Notebook, you also need to install
-[jupyter_nbportal](https://github.com/qwfy/jupyter-nbportal/blob/master/readme.md)
+[jupyter-nbportal](https://github.com/qwfy/jupyter-nbportal/blob/master/readme.md)
 and the `pika` Python library (`pip install pika` will do).
 
 
-## Similar Projects
+## Similar Project
 
 You may also want to consider the [jpalardy/vim-slime](https://github.com/jpalardy/vim-slime),
 which is implemented in VimL. I used it for a few months,

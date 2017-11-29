@@ -111,7 +111,7 @@ To send to Jupyter Notebook, follow these steps:
 
    https://github.com/qwfy/jupyter-nbportal/blob/master/readme.md#how-to-use-it
 
-4. Send as usual, you may want to use <S-Enter> to send by cell though.
+4. Send as usual, you may want to use <S-Enter> to send by cell though
 
 
 ==============================================================================
@@ -127,7 +127,7 @@ How the text is transported from nvim to the target.
 
 Currently, two transport method is supported: `jobsend` and `rmq`.
 
-`jobsend` sends the text using |jobsend()| to a |jobid|.
+`jobsend` sends the text using |jobsend()| to a |job-id|.
 
                                                                     *senter-rmq*
 `rmq` sends the text to a RabbitMQ queue.
