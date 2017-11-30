@@ -3,6 +3,14 @@ if exists('g:loaded_senter')
 endif
 let g:loaded_senter = 1
 
+if !exists('g:senter_transport_python')
+    let g:senter_transport_python = "jobsend"
+endif
+
+if !exists('g:senter_target_python')
+    let g:senter_target_python = "jupyter_console"
+endif
+
 function! s:SetAddress() abort
     if !exists('b:senter_address')
         let gopen = _SenterGetGOpen()
