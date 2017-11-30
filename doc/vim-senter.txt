@@ -23,6 +23,7 @@ section |senter-details| and section |senter-extend-example|.
     4.1 Transport                                             |senter-transport|
     4.2 Target                                                   |senter-target|
     4.3 Address                                                 |senter-address|
+    4.4 Default Transport and Target                            |senter-default|
 5 List of Commands and Functions                                   |senter-list|
     Command SenterSend                                       |senter-sentersend|
     Command SenterSendCell                               |senter-sentersendcell|
@@ -105,13 +106,28 @@ To send to Jupyter Notebook, follow these steps:
 
        `pip install pika`
 
-2. Restart nvim
+2. Restart nvim.
 
 3. Install Jupyter Notebook Portal and RabbitMQ, guide can be found at:
 
    https://github.com/qwfy/jupyter-nbportal/blob/master/readme.md#how-to-use-it
 
-4. Send as usual, you may want to use <S-Enter> to send by cell though
+4. This plugin communicates with the notebook in the browser via a RabbitMQ
+   queue, the queue name by default is derived from the current file name.
+
+   For the automatically derived queue name to work, you need to start
+   `jupyter notebook` and `nvim` from the same directory, that is, their current
+   work directory should be the same, otherwise you have to config the queue
+   name manually with `:SenterConfig rmq jupyter_nbportal <queue name>`. (If
+   needed, you can go the "Developer Tools" of the browser to see the logged
+   queue name by Jupyter Notebook Portal).
+
+   See |senter-rmq| for more details about the queue name and the rmq transport.
+
+5. Send as usual, you may want to use <S-Enter> to send by cell though.
+
+In summary, there are three steps: install dependencies, get the queue name
+right and send the text.
 
 
 ==============================================================================
@@ -131,11 +147,21 @@ Currently, two transport method is supported: `jobsend` and `rmq`.
 
                                                                     *senter-rmq*
 `rmq` sends the text to a RabbitMQ queue.
-To enable this transport, you need to  install the `pika` Python package, as
+To enable this transport, you need to install the `pika` Python package, as
 specified in |senter-jupyter-nbportal|. The default queue name is derived from
-the file name, see
-https://github.com/qwfy/jupyter-nbportal/blob/master/readme.md#queue-name-deriving
-for details. You can also config the queue name via `:SenterConfig`.
+the file name as follows:
+
+    - The relative file name (`%:p`) is taken
+    - Slashes, `/`, in the relative file name are replaced with `;`
+    - If the file name ends with `.py`, replace it with `.ipynb`
+
+For example, if the current file's relative name, (relative to nvim's current
+work directory), is `a/b/c.py`, then the automatically derived queue name would
+be `a;b;c.ipynb`.
+
+You can also config the queue name manually with
+
+    `:SenterConfig rmq <target> <queue name>`.
 
 If `b:senter_transport` is set, (which can be set manually by calling
 `:SenterConfig`), it will be used as the transport method.  Failed to find that,
@@ -193,6 +219,24 @@ When transport is `rmq`, it is a queue name in RabbitMQ.
 If you want to automatically open the transport and a target, the
 `g:senter_open_<transport>_<target>` shoud be used, have a look at the
 `s:SetAddress` function in `senter.vim`.
+
+
+4.4 Default Transport and Target                                *senter-default*
+
+To set the default transport and target used for a file type, set these two
+variables in your `init.vim`:
+
+    `g:senter_transport_<filetype>`
+    `g:senter_target_<filetype>`
+
+For example, if you want to use `jobsend` and `jupyter_console` for all python
+files, you can put these two lines in your `init.vim`:
+
+    `let g:senter_transport_python = "jobsend"`
+    `let g:senter_target_python = "jupyter_console"`
+
+(The above two lines about python is the default, so you don't have to put
+them in your `init.vim` if you are ok with this default).
 
 
 ==============================================================================
@@ -299,7 +343,7 @@ on how to add support for it.
       `let g:senter_transport_sh = 'jobsend'`
   and 
       `let g:senter_target_sh = 'bash'`
-  in your `init.nvim`.
+  in your `init.vim`.
 
 - Optionall write a small function to automatically start a shell, and config
   it to be used:
@@ -312,7 +356,7 @@ on how to add support for it.
 
   Set
       `let g:senter_open_jobsend_bash = 'SenterStartBash'`
-  in `init.nvim`.
+  in `init.vim`.
 
 - Restart nvim and edit a file `nvim /tmp/try.sh`.
 
