@@ -9,7 +9,7 @@ License: MIT
 Send text to other places, called targets, including but not limited to REPLs.
 
 First read the short |senter-quick-start|, then head to a specific transport and
-target, like |senter-jupyter-console|.
+target, such as |senter-jupyter-console|.
 
 If your choice of targets doesn't have a builtin support, or you are not happy
 with the builtin support for Jupyter Console or Jupyter Notebook, head to the
@@ -45,20 +45,21 @@ of each command for details.
 
 1. Call `:SenterConfig` to config the transport method used to transport the
    text to the target, the target that accepts the text, and target's address,
-   like (|job-id|).
+   such as |job-id|.
 
    This step is not always needed, since a good implementation of transport
    and target, when possible, should config themselves automatically.
 
-2. Visual select the lines you want to send, and press <Enter> to send it.
+2. Visual select the lines you want to send, and press `<Enter>` to send it.
 
    This will sends the selected text to |senter-target| which is identified by
    |senter_address| via |senter_transport|, all of these three are configurated in
    the previous step.
 
    Other send commands are available:
-   :3,7 SenterSend                   Send line 3-7
-   <S-Enter> or :SenterSendCell      Send a cell block, see |senter-cell|
+   `:SenterSend`                       Send current line
+   `:3,7 SenterSend`                   Send line 3-7
+   `<S-Enter>` or `:SenterSendCell`      Send a cell block, see |senter-cell|
 
 3. If needed, `:SenterReport` reports the current configuration and `:SenterClear`
    clears the configuration.
@@ -68,10 +69,10 @@ of each command for details.
 2. Jupyter Console                                      *senter-jupyter-console*
 
 Senter has a builtin support for Jupyter Console, and you don't have to call
-`:SenterConfig` before you `:SenterSend`, (but you can if you want to do
-something different).
+`:SenterConfig` before you `:SenterSend`, (but you can if you want to do something
+different).
 
-When `:SenterSend` is called, if a |:termimal| is not already started, it will
+When `:SenterSend` is called, if a |:terminal| is not already started, it will
 start a new terminal by calling the function specified in
 `g:senter_open_jobsend_jupyter_console` to start a new terminal and sent the
 text using |jobsend()|.
@@ -80,20 +81,21 @@ Configurable options:
 
 g:senter_open_jobsend_jupyter_console    *g:senter_open_jobsend_jupyter_console*
 
-    The function name, (a string), to be used to start a new ':termimal'.
+    The function name, (a string), to be used to start a new |:terminal|.
 
-    The default value is `SenterJobsendJupyterConsole`, if you don't like its
-    behaviour, just write another one and pass it's name to this option.
+    The default value is "SenterJobsendJupyterConsole", which is a builtin
+    function, if you don't like its behaviour, just write another one and pass
+    its name to this option.
 
                                  *g:senter_open_jobsend_jupyter_console_command*
 g:senter_open_jobsend_jupyter_console_command
 
-    If g:senter_open_jobsend_jupyter_console = 'SenterJobsendJupyterConsole',
+    If `g:senter_open_jobsend_jupyter_console = 'SenterJobsendJupyterConsole'`,
     then what's in this option will be used to open jupyter console. By
-    default it's `jupyter console`.
+    default it's "jupyter console".
 
     You can set it to something like
-        `source activate some_env && jupyter console`
+        "source activate some_env && jupyter console"
     if you are using Conda or other virtual envs.
 
 
@@ -126,7 +128,7 @@ To send to Jupyter Notebook, follow these steps:
 
 5. Send as usual, you may want to use <S-Enter> to send by cell though.
 
-In summary, there are three steps: install dependencies, get the queue name
+In summary, there are three steps: install dependencies, config the queue name
 right and send the text.
 
 
@@ -134,7 +136,8 @@ right and send the text.
 4. Details                                                      *senter-details*
 
 `:SenterSend` or `:SenterSendCell` needs to know three configurations to send what
-you want to send to the desired targets, they are listed below.
+you want to send to the desired targets, they are |senter-transport|,
+|senter-target| and |senter-address|.
 
 
 4.1. Transport                                                *senter-transport*
@@ -143,7 +146,7 @@ How the text is transported from nvim to the target.
 
 Currently, two transport method is supported: `jobsend` and `rmq`.
 
-`jobsend` sends the text using |jobsend()| to a |job-id|.
+`jobsend` sends the text using |jobsend()| to a |job-id| (the |senter-address|).
 
                                                                     *senter-rmq*
 `rmq` sends the text to a RabbitMQ queue.
@@ -185,8 +188,10 @@ The first one is to decide how to preprocess the text to be sent. For example,
 need to wrap the text with two escape sequences before we pass it to a
 transport.
 
-The second purpose is to facilitate the auto opening of the transport and the
-target.
+The second purpose is to facilitate the auto-opening of the transport and the
+target. For example, if you want to automatically open a `bash` when you are
+sending from a bash script, the support for this auto-opening must know which
+program (in this case, `bash`) to open.
 
 Currently, this plugin handles Jupyter Console (`jupyter_console`) and Jupyter
 Notebook (`jupyter_nbportal`).
@@ -198,7 +203,7 @@ If you need to add a new target, modify the `preprocess_text` function in
 `senter.py`. If you also want to automatically open it, have a look at the
 section |senter-open|.
 
-The configuration options are
+The configurable options are
     `g:senter_target_<filetype>`
 and
     `b:senter_target`
@@ -208,7 +213,7 @@ they follow a similar rule speficed in the |senter-transport| section.
 4.3. Address                                                    *senter-address*
 
 You can have may buffers and you want to associate each of them with their own
-REPL/target, the `b:senter_address` spefifies the id of each these target.
+REPL/target, the `b:senter_address` spefifies an id for each these target.
 
 Format of this option's value depends on the transport used:
 
@@ -218,7 +223,7 @@ When transport is `rmq`, it is a queue name in RabbitMQ.
                                                                    *senter-open*
 If you want to automatically open the transport and a target, the
 `g:senter_open_<transport>_<target>` shoud be used, have a look at the
-`s:SetAddress` function in `senter.vim`.
+`s:SetAddress` function in `senter.vim`, and the section |senter-extend-example|.
 
 
 4.4 Default Transport and Target                                *senter-default*
@@ -321,12 +326,12 @@ View the current configuration.
 
 Function SenterStatusLine                              *senter-senterstatusline*
 
-Return a string suitable for 'statusline'.
+Return a string suitable for use in 'statusline'.
 
 If current buffer is a terminal:
     return b:terminal_job_id
 
-If not terminal buffer and an address is configured:
+If not terminal buffer and an address is configurated:
     return "Current_buffer_number => Address"
 
 Otherwise:
@@ -336,28 +341,31 @@ Otherwise:
 ==============================================================================
 7 An Example to Add Support for Other REPLs              *senter-extend-example*
 
-This plugin doesn't have a builtin support for bash, here we give and example
-on how to add support for it.
+This plugin doesn't have a builtin support for bash, here we give an example on
+how to add support for it.
 
-- Set
-      `let g:senter_transport_sh = 'jobsend'`
-  and 
-      `let g:senter_target_sh = 'bash'`
-  in your `init.vim`.
+Both step 1 and step 2 are optional, but for a better user experience, you
+should do them. For more advanced customization, have a look at |senter-details|.
 
-- Optionall write a small function to automatically start a shell, and config
-  it to be used:
+1. Set
+       `let g:senter_transport_sh = 'jobsend'`
+   and
+       `let g:senter_target_sh = 'bash'`
+   in your `init.vim`.
 
-  function! SenterStartBash() abort
-      vnew
-      let job_id = termopen('bash')
-      return job_id
-  endfunction
+2. Write a small function to automatically start a shell, and config
+   it to be used:
 
-  Set
-      `let g:senter_open_jobsend_bash = 'SenterStartBash'`
-  in `init.vim`.
+   function! SenterStartBash() abort
+       vnew
+       let job_id = termopen('bash')
+       return job_id
+   endfunction
 
-- Restart nvim and edit a file `nvim /tmp/try.sh`.
+   Set
+       `let g:senter_open_jobsend_bash = 'SenterStartBash'`
+   in `init.vim`.
 
-- Type `ls` in the buffer and hit <S-Enter> or :SenterSend.
+3. Restart nvim and edit a file `nvim /tmp/try.sh`.
+
+4. Type `ls` in the buffer and hit `<S-Enter>` or `:SenterSend`.
