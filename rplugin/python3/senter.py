@@ -1,5 +1,4 @@
 # TODO incomplete:
-# - remove rmq connection on nvim terminating
 # - guard g:loaded_senter?
 # - log to python-client's log?
 # - auto focus browser when using jupyter_nbportal
@@ -19,7 +18,6 @@ except ImportError:
 class Senter():
     def __init__(self, nvim):
         self.nvim = nvim
-        self.rmq = {}
         self.logger = logging.getLogger('senter')
         self.logfile = os.getenv('SENTER_DEBUG_LOG', None)
         if self.logfile:
@@ -152,27 +150,25 @@ class Senter():
 
 
     # functions for the RabbitMQ transport ---------------------------
-    def ensure_rmq_conn(self):
-        if not self.rmq:
-            host = 'localhost'
-            self.logger.info(f'connecting to {host}')
-            params = pika.ConnectionParameters(host)
-            self.rmq['conn'] = pika.BlockingConnection(params)
-            self.rmq['channel'] = self.rmq['conn'].channel()
-            self.logger.info(f'connected to {host}')
-
-
-    def send_rmq(self, text, queue_name):
-        self.ensure_rmq_conn()
+    def send_rmq(self, text, queue_name, times_tried=0):
         self.logger.debug(f'sending to queue: {queue_name}')
 
-        self.rmq['channel'].queue_declare(queue=queue_name,
-                                          durable=False,
-                                          auto_delete=True,
-                                          exclusive=False)
-        self.rmq['channel'].basic_publish(exchange='',
-                                          routing_key=queue_name,
-                                          body=text)
+        host = 'localhost'
+        self.logger.debug(f'connecting to {host}')
+        params = pika.ConnectionParameters(host)
+        conn = pika.BlockingConnection(params)
+        chan = conn.channel()
+        self.logger.debug(f'connected to {host}')
+
+        chan.queue_declare(queue=queue_name,
+                           durable=False,
+                           auto_delete=True,
+                           exclusive=False)
+        chan.basic_publish(exchange='',
+                           routing_key=queue_name,
+                           body=text)
+
+        conn.close()
 
 
     # functions for nvim's jobsend() transport
