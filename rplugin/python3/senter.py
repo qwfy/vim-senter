@@ -125,8 +125,11 @@ class Senter():
                 imports = x[match.start():match.end()]
                 imports = remove_empty_lines(imports)
                 imports = imports.rstrip('\n')
-                x = '\n'.join([imports, ghci_quote(rest)])
-            x += '\n\n\n'
+                if rest == '':
+                    x = imports
+                else:
+                    x = '\n'.join([imports, ghci_quote(rest)])
+            x += '\n'
             return x
 
         else:
@@ -296,12 +299,18 @@ class Senter():
 def vim_regex_or(a, b):
     return ''.join([r'\(', a, r'\|', b, r'\)'])
 
-def ghci_quote(text):
-    return '\n'.join([':{', text, ':}'])
-
 def remove_empty_lines(text):
     p = r'\n{2,}'
     return re.sub(p, '\n', text, count=0, flags=re.M)
+
+def is_multiple_nonempty_lines(text):
+    return re.findall(r'\n+', text.strip('\n')) != []
+
+def ghci_quote(text):
+    if is_multiple_nonempty_lines(text):
+        return '\n'.join([':{', text, ':}'])
+    else:
+        return text
 
 def brackete_quote(text):
     '''Quote for bracketed paste.'''
@@ -311,7 +320,7 @@ def brackete_quote(text):
 def remove_surrounding_empty_lines(text):
     text = re.sub(r'^(\s*\n+)+', r'', text, 0)
     text = re.sub(r'(\s*\n+)+$', r'', text, 0)
-    return text
+    return text.strip('\n')
 
 def dedent(text):
     '''Dedent a block of text.
