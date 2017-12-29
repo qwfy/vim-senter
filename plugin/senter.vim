@@ -3,6 +3,29 @@ if exists('g:loaded_senter')
 endif
 let g:loaded_senter = 1
 
+function! s:SetupDefaults() abort
+    let defaults = [
+        \ ['senter_transport_python', 'jobsend'],
+        \ ['senter_target_python', 'jupyter_console'],
+        \ ['senter_open_jobsend_jupyter_console', 'Senter_jobsend_jupyter_console'],
+        \ ['senter_openconfig_jobsend_jupyter_console_command', 'jupyter console'],
+        \ ['senter_open_rmq_jupyter_nbportal', 'Senter_rmq_jupyter_nbportal'],
+        \
+        \ ['senter_transport_haskell', 'jobsend'],
+        \ ['senter_target_haskell', 'ghci'],
+        \ ['senter_open_jobsend_ghci', 'Senter_jobsend_ghci'],
+        \ ['senter_openconfig_jobsend_ghci_command', 'stack ghci']]
+    for kv in defaults
+        let k = kv[0]
+        let v = kv[1]
+        if !exists('g:'.k)
+            let s = join(['let g:', k, '=', "'", v, "'"], '')
+            call nvim_command(s)
+        endif
+    endfor
+endfunction
+call s:SetupDefaults()
+
 " set address, optionally open transport and/or target
 function! s:SetAddress() abort
     if !exists('b:senter_address')
