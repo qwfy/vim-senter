@@ -1,11 +1,11 @@
 *senter.txt*    Send text to REPLs and other places
 
-Author:  Incomplete                                              *senter-author*
+Author:  Incomplete                                            *senter-author*
 License: MIT
 
 
 ==============================================================================
-                                                                        *senter*
+                                                                      *senter*
 Send text to other places, called targets, including but not limited to REPLs.
 
 First read the short |senter-quick-start|, then head to a specific transport
@@ -16,29 +16,29 @@ with the builtin support for Jupyter Console or Jupyter Notebook, head to the
 section |senter-details| and section |senter-extend-example|.
 
 
-1 Quick Start                                               |senter-quick-start|
-2 Jupyter Console                                       |senter-jupyter-console|
-3 Jupyter Notebook                                     |senter-jupyter-nbportal|
-4 Details                                                       |senter-details|
-    4.1 Transport                                             |senter-transport|
-    4.2 Target                                                   |senter-target|
-    4.3 Address                                                 |senter-address|
-    4.4 Default Transport and Target                            |senter-default|
-5 List of Commands and Functions                                   |senter-list|
-    Command SenterSend                                       |senter-sentersend|
-    Command SenterSendCell                               |senter-sentersendcell|
-    Command SenterConfig                                   |senter-senterconfig|
-    Command SenterClear                                     |senter-senterclear|
-    Command SenterReport                                   |senter-senterreport|
-    Function SenterStatusLine                          |senter-senterstatusline|
+1 Quick Start                                             |senter-quick-start|
+2 Jupyter Console                                     |senter-jupyter-console|
+3 Jupyter Notebook                                   |senter-jupyter-nbportal|
+4 Details                                                     |senter-details|
+    4.1 Transport                                           |senter-transport|
+    4.2 Target                                                 |senter-target|
+    4.3 Address                                               |senter-address|
+    4.4 Default Transport and Target                          |senter-default|
+5 List of Commands and Functions                                 |senter-list|
+    Command SenterSend                                     |senter-sentersend|
+    Command SenterSendCell                             |senter-sentersendcell|
+    Command SenterConfig                                 |senter-senterconfig|
+    Command SenterClear                                   |senter-senterclear|
+    Command SenterReport                                 |senter-senterreport|
+    Function SenterStatusLine                        |senter-senterstatusline|
 6 Misc
-    The RabbitMQ Transport                                          |senter-rmq|
-    Automatically Open a Transport and a Target                    |senter-open|
-7 An Example to Add Support for Other REPLs              |senter-extend-example|
+    The RabbitMQ Transport                                        |senter-rmq|
+    Automatically Open a Transport and a Target                  |senter-open|
+7 An Example to Add Support for Other REPLs            |senter-extend-example|
 
 
 ==============================================================================
-1. Quick Start                                              *senter-quick-start*
+1. Quick Start                                            *senter-quick-start*
 
 Below is a general overview of the workflow, if needed, see the documentation
 of each command for details.
@@ -53,24 +53,24 @@ of each command for details.
 2. Visual select the lines you want to send, and press `<Enter>` to send it.
 
    This will sends the selected text to |senter-target| which is identified by
-   |senter_address| via |senter_transport|, all of these three are configurated in
-   the previous step.
+   |senter_address| via |senter_transport|, all of these three are
+   configurated in the previous step.
 
    Other send commands are available:
    `:SenterSend`                       Send current line
    `:3,7 SenterSend`                   Send line 3-7
    `<S-Enter>` or `:SenterSendCell`      Send a cell block, see |senter-cell|
 
-3. If needed, `:SenterReport` reports the current configuration and `:SenterClear`
-   clears the configuration.
+3. If needed, `:SenterReport` reports the current configuration and
+   `:SenterClear` clears the configuration.
 
 
 ==============================================================================
-2. Jupyter Console                                      *senter-jupyter-console*
+2. Jupyter Console                                    *senter-jupyter-console*
 
 Senter has a builtin support for Jupyter Console, and you don't have to call
-`:SenterConfig` before you `:SenterSend`, (but you can if you want to do something
-different).
+`:SenterConfig` before you `:SenterSend`, (but you can if you want to do
+something different).
 
 When `:SenterSend` is called, if a |:terminal| is not already started, it will
 start a new terminal by calling the function specified in
@@ -79,11 +79,11 @@ text using |jobsend()|.
 
 Configurable options:
 
-g:senter_open_jobsend_jupyter_console    *g:senter_open_jobsend_jupyter_console*
+g:senter_open_jobsend_jupyter_console  *g:senter_open_jobsend_jupyter_console*
 
     The function name, (a string), to be used to start a new |:terminal|.
 
-                                     *g:senter_openconfig_jobsend_jupyter_console_command*
+                         *g:senter_openconfig_jobsend_jupyter_console_command*
 g:senter_openconfig_jobsend_jupyter_console_command
 
     If `g:senter_open_jobsend_jupyter_console` is left as default, then what's
@@ -95,7 +95,7 @@ g:senter_openconfig_jobsend_jupyter_console_command
 
 
 ==============================================================================
-3. Jupyter Notebook                                    *senter-jupyter-nbportal*
+3. Jupyter Notebook                                  *senter-jupyter-nbportal*
 
 To send to Jupyter Notebook, follow these steps:
 
@@ -113,13 +113,14 @@ To send to Jupyter Notebook, follow these steps:
    queue, the queue name by default is derived from the current file name.
 
    For the automatically derived queue name to work, you need to start
-   `jupyter notebook` and `nvim` from the same directory, that is, their current
-   work directory should be the same, otherwise you have to config the queue
-   name manually with `:SenterConfig rmq jupyter_nbportal <queue name>`. (If
-   needed, you can go the "Developer Tools" of the browser to see the logged
-   queue name by Jupyter Notebook Portal).
+   `jupyter notebook` and `nvim` from the same directory, that is, their
+   current work directory should be the same, otherwise you have to config the
+   queue name manually with `:SenterConfig rmq jupyter_nbportal <queue name>`.
+   (If needed, you can go the "Developer Tools" of the browser to see the
+   logged queue name by Jupyter Notebook Portal).
 
-   See |senter-rmq| for more details about the queue name and the rmq transport.
+   See |senter-rmq| for more details about the queue name and the rmq
+   transport.
 
 5. Send as usual, you may want to use <S-Enter> to send by cell though.
 
@@ -128,22 +129,23 @@ right and send the text.
 
 
 ==============================================================================
-4. Details                                                      *senter-details*
+4. Details                                                    *senter-details*
 
-`:SenterSend` or `:SenterSendCell` needs to know three configurations to send what
-you want to send to the desired targets, they are |senter-transport|,
+`:SenterSend` or `:SenterSendCell` needs to know three configurations to send
+what you want to send to the desired targets, they are |senter-transport|,
 |senter-target| and |senter-address|.
 
 
-4.1. Transport                                                *senter-transport*
+4.1. Transport                                              *senter-transport*
 
 How the text is transported from nvim to the target.
 
 Currently, two transport method is supported: `jobsend` and `rmq`.
 
-`jobsend` sends the text using |jobsend()| to a |job-id| (the |senter-address|).
+`jobsend` sends the text using |jobsend()| to a |job-id|
+(the |senter-address|).
 
-                                                                    *senter-rmq*
+                                                                  *senter-rmq*
 `rmq` sends the text to a RabbitMQ queue.
 To enable this transport, you need to install the `pika` Python package, as
 specified in |senter-jupyter-nbportal|. The default queue name is derived from
@@ -154,33 +156,33 @@ the file name as follows:
     - If the file name ends with `.py`, replace it with `.ipynb`
 
 For example, if the current file's relative name, (relative to nvim's current
-work directory), is `a/b/c.py`, then the automatically derived queue name would
-be `a;b;c.ipynb`.
+work directory), is `a/b/c.py`, then the automatically derived queue name
+would be `a;b;c.ipynb`.
 
 You can also config the queue name manually with
 
     `:SenterConfig rmq <target> <queue name>`.
 
 If `b:senter_transport` is set, (which can be set manually by calling
-`:SenterConfig`), it will be used as the transport method.  Failed to find that,
-what's in `g:senter_transport_<filetype>` will be used. If it is also not set,
-then you will be asked interactively to enter one, which will be saved for
-later use, so you don't have to enter it again.
+`:SenterConfig`), it will be used as the transport method.  Failed to find
+that, what's in `g:senter_transport_<filetype>` will be used. If it is also
+not set, then you will be asked interactively to enter one, which will be
+saved for later use, so you don't have to enter it again.
 
 To add a new transport, modify the `dispatch_send` function in `senter.py`.
 
 
-4.2. Target                                                      *senter-target*
+4.2. Target                                                    *senter-target*
 
 Target is what kind of place you want your text to go. For example, it can be
-Jupyter's `jupyter console` and `jupyter notebook`, OCaml's `utop`, Haskell's `ghci`,
-etc.
+Jupyter's `jupyter console` and `jupyter notebook`, OCaml's `utop`, Haskell's
+`ghci`, etc.
 
 Target has two purposes.
 
 The first one is to decide how to preprocess the text to be sent. For example,
-`jupyter console` support bracketed paste (which enables multiline paste), so we
-need to wrap the text with two escape sequences before we pass it to a
+`jupyter console` support bracketed paste (which enables multiline paste), so
+we need to wrap the text with two escape sequences before we pass it to a
 transport.
 
 The second purpose is to facilitate the auto-opening of the transport and the
@@ -205,7 +207,7 @@ and
 they follow a similar rule speficed in the |senter-transport| section.
 
 
-4.3. Address                                                    *senter-address*
+4.3. Address                                                  *senter-address*
 
 You can have may buffers and you want to associate each of them with their own
 REPL/target, the `b:senter_address` spefifies an id for each these target.
@@ -215,13 +217,14 @@ Format of this option's value depends on the transport used:
 When transport is `jobsend`, it is the |job-id|.
 When transport is `rmq`, it is a queue name in RabbitMQ.
 
-                                                                   *senter-open*
+                                                                 *senter-open*
 If you want to automatically open the transport and a target, the
 `g:senter_open_<transport>_<target>` shoud be used, have a look at the
-`s:SetAddress` function in `senter.vim`, and the section |senter-extend-example|.
+`s:SetAddress` function in `senter.vim`, and the section
+|senter-extend-example|.
 
 
-4.4 Default Transport and Target                                *senter-default*
+4.4 Default Transport and Target                              *senter-default*
 
 To set the default transport and target used for a file type, set these two
 variables in your `init.vim`:
@@ -263,10 +266,10 @@ them in your `init.vim` if you are ok with this default).
 
 
 ==============================================================================
-5. List of Commands and Functions                                  *senter-list*
+5. List of Commands and Functions                                *senter-list*
 
 
-Command SenterSend                                           *senter-sentersend*
+Command SenterSend                                         *senter-sentersend*
 
 Send a range of text.
 
@@ -284,14 +287,14 @@ setup them automatically, or ask you for it, depends on the implementation of
 the transport and the target.
 
 
-Command SenterSendCell                                   *senter-sentersendcell*
+Command SenterSendCell                                 *senter-sentersendcell*
 
 Send the current cell, useful when you have to send the same piece of code
 again and again.
 
 <S-Enter> is mapped to this command by default.
 
-                                                                   *senter-cell*
+                                                                 *senter-cell*
 A cell is a piece of text enclosed in two markers, for example, below is a
 cell:
 
@@ -317,7 +320,7 @@ print('Bye world.')
 # End of the file also counts as a closing marker.
 
 
-Command SenterConfig                                       *senter-senterconfig*
+Command SenterConfig                                     *senter-senterconfig*
 
 Config the variables needed for sending the text.
 
@@ -330,7 +333,7 @@ Config the variables needed for sending the text.
     will make the `:SenterSend` send to a term whose |job-id| is 3.
 
 
-Command SenterClear                                         *senter-senterclear*
+Command SenterClear                                       *senter-senterclear*
     Clear transport, target and address configuration in the current buffer.
 
     `:SenterClear`
@@ -340,11 +343,11 @@ Command SenterClear                                         *senter-senterclear*
         Clear specified, multiple arguments can be specified.
 
 
-Command SenterReport                                       *senter-senterreport*
+Command SenterReport                                     *senter-senterreport*
 
 View the current configuration.
 
-Function SenterStatusLine                              *senter-senterstatusline*
+Function SenterStatusLine                            *senter-senterstatusline*
 
 Return a string suitable for use in 'statusline'.
 
@@ -359,13 +362,14 @@ Otherwise:
 
 
 ==============================================================================
-7 An Example to Add Support for Other REPLs              *senter-extend-example*
+7 An Example to Add Support for Other REPLs            *senter-extend-example*
 
-This plugin doesn't have a builtin support for bash, here we give an example on
-how to add support for it.
+This plugin doesn't have a builtin support for bash, here we give an example
+on how to add support for it.
 
 Both step 1 and step 2 are optional, but for a better user experience, you
-should do them. For more advanced customization, have a look at |senter-details|.
+should do them. For more advanced customization, have a look at
+|senter-details|.  
 
 1. Set
        `let g:senter_transport_sh = 'jobsend'`
