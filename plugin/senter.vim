@@ -3,18 +3,12 @@ if exists('g:loaded_senter')
 endif
 let g:loaded_senter = 1
 
-if !exists('g:senter_transport_python')
-    let g:senter_transport_python = "jobsend"
-endif
-
-if !exists('g:senter_target_python')
-    let g:senter_target_python = "jupyter_console"
-endif
-
+" set address, optionally open transport and/or target
 function! s:SetAddress() abort
     if !exists('b:senter_address')
         let gopen = _SenterGetGOpen()
         if exists(gopen)
+            " TODO incomplete: do we also need to remember the tab id?
             let orig_winid = win_getid()
             let F = function(eval(gopen))
             let senter_address = F()
@@ -45,11 +39,42 @@ endfunction
 command -range -nargs=0 SenterSend call s:HelpSenterSend(<line1>, <line2>)
 command -nargs=0 SenterSendCell call s:HelpSenterSendCell()
 
-if !exists('g:senter_no_map')
+
+" functions that returns addresses,
+" optionally by opening a new transport and/or target
+" ====================================================================
+function! SenterSplitJobsend(cmd) abort
+    vnew
+    let job_id = termopen(a:cmd)
+    return job_id
+endfunction
+
+function! Senter_jobsend_jupyter_console() abort
+    return SenterSplitJobsend(g:senter_openconfig_jobsend_jupyter_console_command)
+endfunction
+
+function! Senter_jobsend_ghci() abort
+    return SenterSplitJobsend(g:senter_openconfig_jobsend_ghci_command)
+endfunction
+
+function! Senter_rmq_jupyter_nbportal() abort
+    return expand("%:p:.:gs?/?;?:gs?\.py$?.ipynb?")
+endfunction
+
+
+" key maps
+" ====================================================================
+if !exists('g:senter_map')
+    let g:senter_map = 1
+endif
+if g:senter_map == 1
     nnoremap <S-ENTER> :SenterSendCell<CR>
     xnoremap <ENTER> :'<,'>SenterSend<CR>
 endif
 
+
+" status line
+" ====================================================================
 function! SenterStatusLine() abort
     if &buftype == 'terminal'
         return 'Job '. b:terminal_job_id
@@ -61,34 +86,4 @@ function! SenterStatusLine() abort
             return bnumber
         endif
     endif
-endfunction
-
-
-" Settings for specific transports and targets
-if !exists('g:senter_open_jobsend_jupyter_console')
-    let g:senter_open_jobsend_jupyter_console = 'SenterJobsendJupyterConsole'
-endif
-
-if !exists('g:senter_open_jobsend_jupyter_console_command')
-    let g:senter_open_jobsend_jupyter_console_command = 'jupyter console'
-endif
-
-function! SenterJobsendJupyterConsole() abort
-    vnew
-    let job_id = termopen(g:senter_open_jobsend_jupyter_console_command)
-    return job_id
-endfunction
-
-
-if !exists('g:senter_open_rmq_jupyter_nbportal')
-    let g:senter_open_rmq_jupyter_nbportal = 'SenterRmqJupyterNbportal'
-endif
-
-function! SenterRmqJupyterNbportal() abort
-    " When sending to jupyter_nbportal via rmq,
-    " use a modified version of the file name as address:
-    " - get the relative file name, relative to current directory
-    " - replace slashes with semicolons
-    " - if file ends with .py, replace it with .ipynb
-    return expand("%:p:.:gs?/?;?:gs?\.py$?.ipynb?")
 endfunction

@@ -27,7 +27,21 @@ class Senter():
             handler.setFormatter(formatter)
             self.logger.addHandler(handler)
             self.logger.setLevel(logging.DEBUG)
-        self.logger.debug('init')
+        self._init_setup_default_configs()
+
+    def _init_setup_default_configs(self):
+        defaults = [
+            # for python
+            ('senter_transport_python', 'jobsend'),
+            ('senter_target_python', 'jupyter_console'),
+            ('senter_open_jobsend_jupyter_console', 'Senter_jobsend_jupyter_console'),
+            ('senter_openconfig_jobsend_jupyter_console_command', 'jupyter console'),
+            ('senter_open_rmq_jupyter_nbportal', 'Senter_rmq_jupyter_nbportal')]
+
+        for k, default in defaults:
+            if k not in self.nvim.vars or self.nvim.vars[k] is None:
+                self.logger.debug(f'setting g:{k}={default}')
+                self.nvim.vars[k] = default
 
 
     # utility functions ----------------------------------------------
