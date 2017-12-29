@@ -30,6 +30,8 @@ Just use your nvim's plugin manager to install it. For example, if you are using
 
     Plug 'qwfy/vim-senter', { 'do': ':UpdateRemotePlugins' }
 
+If you are using other plugin managers, don't forget to execute `:UpdateRemotePlugins` after installing this plugin.
+
 The Jupyter Console works out of the box.
 
 If you want to send to Jupyter Notebook, you also need to install

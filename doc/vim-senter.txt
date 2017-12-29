@@ -281,8 +281,10 @@ cell:
 #
 # Sended text starts from this line, (including this line)
 #
-# The '# %%' in the above line is the opening marker.
-# Generally, the marker is defined by '^<comment_char> %%.*$',
+# The '# %% ' in the above line is the opening marker.
+# Generally, the marker is defined by one of:
+#     '^<comment_char> %%$'
+#     '^<comment_char> %% .*$'
 # where <comment_char> is current file type's comment character.
 # Begin of the file also counts as an opening marker.
 #
@@ -292,7 +294,7 @@ print('Bye world.')
 #
 # %%    <----- end of the cell
 #
-# The '# %%' in the above line is the closing marker.
+# The '# %% ' in the above line is the closing marker.
 # (It is equal to the opening marker)
 # End of the file also counts as a closing marker.
 

@@ -215,13 +215,6 @@ class Senter():
     def send_cell(self, args):
         '''Send text between tow cell markers.
 
-        Cell marker is defined to be '<comment chars> %%', for example,
-        when the file type is python, then comment char would be '#',
-        so the cell marker is '# %%'.
-
-        If no opening marker is found, begining of the cell is set to begining of the file.
-        If no ending marker is found, end of the cell is set to end of the file.
-
         In theory, maybe this could be done with SenterSend,
         but the regex is two complex, so do it in python.
         '''
@@ -234,6 +227,8 @@ class Senter():
         else:
             marker = parts[0].strip()
             marker += ' %%'
+            marker = r'^\s*' + marker
+            marker = regex_or(marker+r'$', marker+r' .*$')
 
             firstline = self.nvim.funcs.search(marker, 'bcnW')
             if firstline == 0:
@@ -310,3 +305,8 @@ class Senter():
         transport = self.get_send_config_o('transport')
         target = self.get_send_config_o('target')
         return f'g:senter_open_{transport}_{target}'
+
+
+
+def regex_or(a, b):
+    return ''.join([r'\(', a, r'\|', b, r'\)'])
