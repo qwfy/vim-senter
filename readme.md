@@ -1,8 +1,13 @@
 Vim-SEnter enables you to send text from nvim to REPLs or other places.
 
-It has builtin support for Jupyter Console and Jupyter Notebook. Other REPLs
-can be added, if you need nothing fancy, adding support for a new REPL
-is just a few lines of configuration.
+It has builtin support for
+
+- Jupyter Console
+- Jupyter Notebook (additional dependency needed)
+- GHCi (stack ghci)
+
+Other REPLs can be added, if you need nothing fancy, adding support for a
+new REPL is just a few lines of configuration.
 
 
 ## General Workflow

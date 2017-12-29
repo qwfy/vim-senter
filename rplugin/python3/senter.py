@@ -36,7 +36,13 @@ class Senter():
             ('senter_target_python', 'jupyter_console'),
             ('senter_open_jobsend_jupyter_console', 'Senter_jobsend_jupyter_console'),
             ('senter_openconfig_jobsend_jupyter_console_command', 'jupyter console'),
-            ('senter_open_rmq_jupyter_nbportal', 'Senter_rmq_jupyter_nbportal')]
+            ('senter_open_rmq_jupyter_nbportal', 'Senter_rmq_jupyter_nbportal'),
+
+            # for haskell
+            ('senter_transport_haskell', 'jobsend'),
+            ('senter_target_haskell', 'ghci'),
+            ('senter_open_jobsend_ghci', 'Senter_jobsend_ghci'),
+            ('senter_openconfig_jobsend_ghci_config', 'stack ghci')]
 
         for k, default in defaults:
             if k not in self.nvim.vars or self.nvim.vars[k] is None:
@@ -146,18 +152,33 @@ class Senter():
         if target == 'jupyter_console' and filetype == 'python':
             # the purpose of the newlines at the end is to
             # let jupyter console execute what we just sent
-            nosurrounding = self.remove_surrounding_empty_lines(text)
-            dedented = self.dedent(nosurrounding)
-            quoted = self.brackete_quote(dedented)
-            with_new_lines = quoted + '\n\n\n'
-            return with_new_lines
+            x = self.remove_surrounding_empty_lines(text)
+            x = self.dedent(x)
+            x = self.brackete_quote(x)
+            x += '\n\n\n'
+            return x
 
         elif target == 'jupyter_nbportal' and filetype == 'python':
-            nosurrounding = self.remove_surrounding_empty_lines(text)
-            dedented = self.dedent(nosurrounding)
+            x = self.remove_surrounding_empty_lines(text)
+            x = self.dedent(x)
             msg = {'command': 'insert_code_at_bottom_and_execute',
-                   'data': dedented}
+                   'data': x}
             return json.dumps(msg)
+
+        elif target == 'ghci':
+            x = self.remove_surrounding_empty_lines(text)
+            p = r'^import .+$(^import .+$|\n)*'
+            match = re.match(p, x, re.M)
+            if match is None:
+                x = ghci_quote(x)
+            else:
+                rest = x[match.end():]
+                imports = x[match.start():match.end()]
+                imports = remove_empty_lines(imports)
+                imports = imports.rstrip('\n')
+                x = '\n'.join([imports, ghci_quote(rest)])
+            x += '\n\n\n'
+            return x
 
         else:
             return text
@@ -242,7 +263,7 @@ class Senter():
             marker = parts[0].strip()
             marker += ' %%'
             marker = r'^\s*' + marker
-            marker = regex_or(marker+r'$', marker+r' .*$')
+            marker = vim_regex_or(marker+r'$', marker+r' .*$')
 
             firstline = self.nvim.funcs.search(marker, 'bcnW')
             if firstline == 0:
@@ -322,5 +343,12 @@ class Senter():
 
 
 
-def regex_or(a, b):
+def vim_regex_or(a, b):
     return ''.join([r'\(', a, r'\|', b, r'\)'])
+
+def ghci_quote(text):
+    return '\n'.join([':{', text, ':}'])
+
+def remove_empty_lines(text):
+    p = r'\n{2,}'
+    return re.sub(p, '\n', text, count=0, flags=re.M)
