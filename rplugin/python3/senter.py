@@ -110,36 +110,6 @@ class Senter():
                 else:
                     return None
 
-
-    # text processing functions --------------------------------------
-    def brackete_quote(self, text):
-        '''Quote for bracketed paste.'''
-
-        return ''.join(['\x1B[200~', text, '\x1B[201~'])
-
-    def remove_surrounding_empty_lines(self, text):
-        text = re.sub(r'^(\s*\n+)+', r'', text, 0)
-        text = re.sub(r'(\s*\n+)+$', r'', text, 0)
-        return text
-
-    def dedent(self, text):
-        '''Dedent a block of text.
-
-        It expects the first line (if it has a first line)
-        to contain characters other than spaces and tabs,
-        if it doesn't, the text is left untouched.
-
-        Mixed indentaion is not supported.
-        '''
-
-        pat = r'(?P<indent_char>[ \t])(?P=indent_char)*'
-        match = re.match(pat, text)
-        if match is None:
-            return text
-        else:
-            indent_pat = match.group(0)
-            return re.sub('^'+indent_pat, '', text, count=0, flags=re.M)
-
     def process_text(self, text, target, filetype):
         '''Process the text to make it suitable for target.
 
@@ -152,21 +122,21 @@ class Senter():
         if target == 'jupyter_console' and filetype == 'python':
             # the purpose of the newlines at the end is to
             # let jupyter console execute what we just sent
-            x = self.remove_surrounding_empty_lines(text)
-            x = self.dedent(x)
-            x = self.brackete_quote(x)
+            x = remove_surrounding_empty_lines(text)
+            x = dedent(x)
+            x = brackete_quote(x)
             x += '\n\n\n'
             return x
 
         elif target == 'jupyter_nbportal' and filetype == 'python':
-            x = self.remove_surrounding_empty_lines(text)
-            x = self.dedent(x)
+            x = remove_surrounding_empty_lines(text)
+            x = dedent(x)
             msg = {'command': 'insert_code_at_bottom_and_execute',
                    'data': x}
             return json.dumps(msg)
 
         elif target == 'ghci':
-            x = self.remove_surrounding_empty_lines(text)
+            x = remove_surrounding_empty_lines(text)
             p = r'^import .+$(^import .+$|\n)*'
             match = re.match(p, x, re.M)
             if match is None:
@@ -343,6 +313,7 @@ class Senter():
 
 
 
+# text processing functions --------------------------------------
 def vim_regex_or(a, b):
     return ''.join([r'\(', a, r'\|', b, r'\)'])
 
@@ -352,3 +323,31 @@ def ghci_quote(text):
 def remove_empty_lines(text):
     p = r'\n{2,}'
     return re.sub(p, '\n', text, count=0, flags=re.M)
+
+def brackete_quote(text):
+    '''Quote for bracketed paste.'''
+
+    return ''.join(['\x1B[200~', text, '\x1B[201~'])
+
+def remove_surrounding_empty_lines(text):
+    text = re.sub(r'^(\s*\n+)+', r'', text, 0)
+    text = re.sub(r'(\s*\n+)+$', r'', text, 0)
+    return text
+
+def dedent(text):
+    '''Dedent a block of text.
+
+    It expects the first line (if it has a first line)
+    to contain characters other than spaces and tabs,
+    if it doesn't, the text is left untouched.
+
+    Mixed indentaion is not supported.
+    '''
+
+    pat = r'(?P<indent_char>[ \t])(?P=indent_char)*'
+    match = re.match(pat, text)
+    if match is None:
+        return text
+    else:
+        indent_pat = match.group(0)
+        return re.sub('^'+indent_pat, '', text, count=0, flags=re.M)
