@@ -8,8 +8,8 @@ License: MIT
                                                                         *senter*
 Send text to other places, called targets, including but not limited to REPLs.
 
-First read the short |senter-quick-start|, then head to a specific transport and
-target, such as |senter-jupyter-console|.
+First read the short |senter-quick-start|, then head to a specific transport
+and target, such as |senter-jupyter-console|.
 
 If your choice of targets doesn't have a builtin support, or you are not happy
 with the builtin support for Jupyter Console or Jupyter Notebook, head to the
@@ -83,16 +83,11 @@ g:senter_open_jobsend_jupyter_console    *g:senter_open_jobsend_jupyter_console*
 
     The function name, (a string), to be used to start a new |:terminal|.
 
-    The default value is "SenterJobsendJupyterConsole", which is a builtin
-    function, if you don't like its behaviour, just write another one and pass
-    its name to this option.
+                                     *g:senter_openconfig_jobsend_jupyter_console_command*
+g:senter_openconfig_jobsend_jupyter_console_command
 
-                                 *g:senter_open_jobsend_jupyter_console_command*
-g:senter_open_jobsend_jupyter_console_command
-
-    If `g:senter_open_jobsend_jupyter_console = 'SenterJobsendJupyterConsole'`,
-    then what's in this option will be used to open jupyter console. By
-    default it's "jupyter console".
+    If `g:senter_open_jobsend_jupyter_console` is left as default, then what's
+    in this option will be used to open jupyter console.
 
     You can set it to something like
         "source activate some_env && jupyter console"
@@ -244,6 +239,29 @@ files, you can put these two lines in your `init.vim`:
 them in your `init.vim` if you are ok with this default).
 
 
+4.5 Summary of Configurations
+
+`g:senter_transport_<filetype>`
+    String. Default transport for <filetype>.
+
+`g:senter_target_<filetype>`
+    String. Default target for <filetype>
+
+`g:senter_open_<transport>_<target>`
+    String. Name of a nullary function which will be called when there is no
+    address available for the current buffer. The function should return a
+    |senter-address|.
+
+`g:senter_openconfig_<transport>_<target>_<configname>`
+    Any. Configuration for `g:senter_open_<transport>_<target>`
+
+`g:senter_targetconfig_<target>_<filetype>_<configname>`
+    Any. Target configuration for a specific file type.
+
+`g:senter_map`
+    0 or 1. If it is 1 then setup key mappings.
+
+
 ==============================================================================
 5. List of Commands and Functions                                  *senter-list*
 
@@ -259,7 +277,7 @@ Examples:
     `:3,7 SenterSend` sends line 3-7.
 
     Visually select line 3-7 and press <Enter> also sends line 3-7.
-    (By default, <Enter> is xnoremap-ed to `'<,'> SenterSend`)
+    (By default, <Enter> is mapped to `'<,'> SenterSend`)
 
 If configurations needed for sending the text are not found, it will either
 setup them automatically, or ask you for it, depends on the implementation of
@@ -271,7 +289,7 @@ Command SenterSendCell                                   *senter-sentersendcell*
 Send the current cell, useful when you have to send the same piece of code
 again and again.
 
-<S-Enter> is nnoremap-ed to this command by default.
+<S-Enter> is mapped to this command by default.
 
                                                                    *senter-cell*
 A cell is a piece of text enclosed in two markers, for example, below is a
